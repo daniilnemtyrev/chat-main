@@ -13,27 +13,36 @@ import { TokenService } from 'src/tokens/tokens.service';
 export class AuthService {
   constructor(
     private userService: UsersService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
   ) {}
 
   async login(userDto: CreateUserDto) {
     const user = await this.validateUser(userDto);
-    const acessToken = this.tokenService.generateToken(user);
-    return {acessToken, ...userDto};
+    const tokens = this.tokenService.generateToken(user);
+    await this.tokenService.saveToken(user.id, tokens.refreshToken);
+    const data = { ...tokens, user };
+    return data;
   }
 
   private async validateUser(userDto: CreateUserDto) {
     const user = await this.userService.getUserByEmail(userDto.email);
-    const passwordEquals = await bcrypt.compare(
-      userDto.password,
-      user.password,
-    );
-    if (user && passwordEquals) {
-      return user;
+    if (!user) {
+      throw new UnauthorizedException({
+        message: 'Email не найден',
+      });
     }
-    throw new UnauthorizedException({
-      message: 'Некорректный email или пароль',
-    });
+    if (user != null) {
+      const passwordEquals = await bcrypt.compare(
+        userDto.password,
+        user.password,
+      );
+      if (!passwordEquals) {
+        throw new UnauthorizedException({
+          message: 'Неверный пароль',
+        });
+      }
+    }
+    return user;
   }
 
   async registration(userDto: CreateUserDto) {
@@ -49,11 +58,9 @@ export class AuthService {
       ...userDto,
       password: hashPassword,
     });
-    const tokens = await this.tokenService.generateToken(user);
-    await this.tokenService.saveToken(user.id, (await tokens).refreshToken);
-    const data = {tokens, ...userDto};
+    const tokens = this.tokenService.generateToken(user);
+    await this.tokenService.saveToken(user.id, tokens.refreshToken);
+    const data = { ...tokens, user };
     return data;
   }
-
-
 }

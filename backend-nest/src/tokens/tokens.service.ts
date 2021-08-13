@@ -8,11 +8,11 @@ import { JwtService } from '@nestjs/jwt';
 export class TokenService {
   constructor(@InjectModel(Token) private tokenRepository: typeof Token,  private jwtService: JwtService) {}
 
-  async generateToken(user) {
+  generateToken(user) {
     const payload = { email: user.email, id: user.id };
     return {
-      acessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload)
+      acessToken: this.jwtService.sign(payload, {expiresIn: process.env.PRIVATE_KEY_ACESS = '30m'}),
+      refreshToken: this.jwtService.sign(payload, {expiresIn: process.env.PRIVATE_KEY_ACESS = '30d'})
     };
   }
 
