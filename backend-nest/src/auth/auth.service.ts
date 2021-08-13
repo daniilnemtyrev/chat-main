@@ -63,4 +63,29 @@ export class AuthService {
     const data = { ...tokens, user };
     return data;
   }
+
+  async logout(refreshToken) {
+    const token = await this.tokenService.removeToken(refreshToken);
+    return token;
+  }
+
+  async refresh(refreshToken) {
+    if (!refreshToken) {
+      throw new UnauthorizedException({
+        message: 'Ошибка авторизации',
+      });
+    }
+    const userData = this.tokenService.validateRefreshToken(refreshToken);
+    const tokenFromDb = await this.tokenService.findToken(refreshToken);
+    if (!userData && !tokenFromDb) {
+      throw new UnauthorizedException({
+        message: 'Ошибка авторизации',
+      });
+    }
+    const userDto = await this.userService.getUserById(userData.userId);
+    const tokens = this.tokenService.generateToken(userDto);
+    await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
+    const data = { ...tokens, userDto };
+    return data;
+  }
 }

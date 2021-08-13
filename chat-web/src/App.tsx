@@ -1,10 +1,8 @@
 import React from 'react';
-import { LogReg } from './components/index';
-import Home from './pages/Home';
-import GlobalStyle from './styles/global';
+import LoginForm from './components/loginForm';
 
 const App: React.FC = () => {
-  return;
+  return <LoginForm />;
 };
 
 export default App;
