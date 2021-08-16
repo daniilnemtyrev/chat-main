@@ -1,4 +1,3 @@
-
 import { AuthModule } from './../auth/auth.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { forwardRef, Module } from '@nestjs/common';

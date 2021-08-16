@@ -1,4 +1,12 @@
-import { Body, Post, Req, Res, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Get,
+  Post,
+  Req,
+  Res,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
@@ -32,24 +40,15 @@ export class AuthController {
 
   @UsePipes(new ValidationPipe())
   @Post('/logout')
-  async logout(
-    @Body() userDto: CreateUserDto,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
+  async logout(@Req() req: Request, @Res() res: Response) {
     const { refreshToken } = req.cookies;
     const token = await this.authService.logout(refreshToken);
     res.clearCookie('refreshToken');
     return res.json(token);
   }
 
-  @UsePipes(new ValidationPipe())
-  @Post('/logout')
-  async refresh(
-    @Body() userDto: CreateUserDto,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
+  @Get('/refresh')
+  async refresh(@Req() req: Request, @Res() res: Response) {
     const { refreshToken } = req.cookies;
     const token = await this.authService.refresh(refreshToken);
     res.cookie('refreshToken', token.refreshToken, {

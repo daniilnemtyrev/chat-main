@@ -6,7 +6,6 @@ import { User } from './users/users.model';
 import { AuthModule } from './auth/auth.module';
 import { Token } from './tokens/tokens.model';
 
-
 @Module({
   controllers: [],
   providers: [],

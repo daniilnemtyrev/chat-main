@@ -5,15 +5,14 @@ import { Token } from './tokens.model';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 
-
 @Module({
   controllers: [],
   providers: [TokenService],
   imports: [
     SequelizeModule.forFeature([Token]),
     JwtModule.register({
-    secret: process.env.PRIVATE_KEY || 'QWERTY',
-  }),
+      secret: process.env.PRIVATE_KEY || 'QWERTY',
+    }),
   ],
   exports: [TokenService, JwtModule],
 })

@@ -8,12 +8,15 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { TokenService } from 'src/tokens/tokens.service';
+import { User } from 'src/users/users.model';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private tokenService: TokenService,
+    @InjectModel(User) private userRepository: typeof User,
   ) {}
 
   async login(userDto: CreateUserDto) {
@@ -77,15 +80,17 @@ export class AuthService {
     }
     const userData = this.tokenService.validateRefreshToken(refreshToken);
     const tokenFromDb = await this.tokenService.findToken(refreshToken);
-    if (!userData && !tokenFromDb) {
+    if (!userData || !tokenFromDb) {
       throw new UnauthorizedException({
         message: 'Ошибка авторизации',
       });
     }
-    const userDto = await this.userService.getUserById(userData.userId);
-    const tokens = this.tokenService.generateToken(userDto);
-    await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
-    const data = { ...tokens, userDto };
+    const user = await this.userRepository.findOne({
+      where: { id: userData.id },
+    });
+    const tokens = this.tokenService.generateToken(user);
+    await this.tokenService.saveToken(user.id, tokens.refreshToken);
+    const data = { ...tokens, user };
     return data;
   }
 }

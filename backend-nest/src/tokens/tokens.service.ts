@@ -15,10 +15,10 @@ export class TokenService {
     const payload = { email: user.email, id: user.id };
     return {
       acessToken: this.jwtService.sign(payload, {
-        expiresIn: (process.env.PRIVATE_KEY_ACESS = '30m'),
+        expiresIn: '30m',
       }),
       refreshToken: this.jwtService.sign(payload, {
-        expiresIn: (process.env.PRIVATE_KEY_ACESS = '30d'),
+        expiresIn: '30d',
       }),
     };
   }
@@ -48,7 +48,9 @@ export class TokenService {
 
   validateAccesToken(token) {
     try {
-      const userData = this.jwtService.verify(token);
+      const userData = this.jwtService.verify(token, {
+        secret: process.env.PRIVATE_KEY,
+      });
       return userData;
     } catch (e) {
       return null;
@@ -57,7 +59,9 @@ export class TokenService {
 
   validateRefreshToken(token) {
     try {
-      const userData = this.jwtService.verify(token);
+      const userData = this.jwtService.verify(token, {
+        secret: process.env.PRIVATE_KEY,
+      });
       return userData;
     } catch (e) {
       return null;
