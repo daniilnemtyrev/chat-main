@@ -32,6 +32,5 @@ export class JwtAuthGuard implements CanActivate {
         message: 'Пользователь не авторизован',
       });
     }
-    return undefined;
   }
 }

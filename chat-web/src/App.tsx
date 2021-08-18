@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect } from 'react';
-import LoginForm from './components/loginForm';
 import { Context } from './index';
+import Auth from './pages/Auth';
+import Chat from './pages/Chat';
 
 const App: React.FC = () => {
   const { store } = useContext(Context);
@@ -12,19 +13,10 @@ const App: React.FC = () => {
   }, []);
 
   if (!store.IsAuth) {
-    return <LoginForm />;
+    return <Auth />;
   }
 
-  return (
-    <div>
-      <h1>
-        {store.IsAuth
-          ? `Пользователь авторизован ${store.user.email} `
-          : `Авторизуйтесь!`}
-      </h1>
-      <button onClick={() => store.logout()}>Выйти</button>
-    </div>
-  );
+  return <div>{store.IsAuth ? <Chat /> : `Авторизуйтесь!`}</div>;
 };
 
 export default observer(App);

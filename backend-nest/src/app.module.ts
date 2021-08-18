@@ -5,10 +5,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './users/users.model';
 import { AuthModule } from './auth/auth.module';
 import { Token } from './tokens/tokens.model';
+import { AppGateway } from './chat/chat.gateway';
 
 @Module({
   controllers: [],
-  providers: [],
+  providers: [AppGateway],
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.${process.env.NODE_ENV}.env`,

@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import * as uuid from 'uuid';
-
 import io from 'socket.io-client';
-import { Container, Content, Card, MyMessage, OtherMessage } from './styles';
+import {
+  Container,
+  Content,
+  Card,
+  MyMessage,
+  OtherMessage,
+  Send,
+} from '../styles/chat';
+import { Message, Payload } from '../interfaces/IChat';
+import { Context } from '..';
+import { Button } from '../styles/UI/Button';
+import { Input } from '../styles/UI/Input';
 
-interface Message {
-  id: string;
-  name: string;
-  text: string;
-}
+const socket = io('ws://localhost:4000');
 
-interface Payload {
-  name: string;
-  text: string;
-}
-
-const socket = io('http://localhost:3333');
-
-const Home: React.FC = () => {
-  const [title] = useState('Chat Web');
+const Chat: React.FC = () => {
+  const [title] = useState('2ch');
   const [name, setName] = useState('');
   const [text, setText] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+
+  const { store } = useContext(Context);
 
   useEffect(() => {
     function receivedMessage(message: Payload) {
@@ -40,13 +41,13 @@ const Home: React.FC = () => {
   }, [messages, name, text]);
 
   function validateInput() {
-    return name.length > 0 && text.length > 0;
+    return text.length > 0;
   }
 
   function sendMessage() {
     if (validateInput()) {
       const message: Payload = {
-        name,
+        name: store.user.email,
         text,
       };
 
@@ -59,29 +60,14 @@ const Home: React.FC = () => {
     <Container>
       <Content>
         <h1>{title}</h1>
-        <input
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Enter name..."
-        />
-        <input
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Enter name..."
-        />
+        <Button onClick={() => store.logout()}>Выйти</Button>
+        <h4>{store.user.email}</h4>
         <Card>
           <ul>
             {messages.map(message => {
-              if (message.name === name) {
+              if (message.name === store.user.email) {
                 return (
                   <MyMessage key={message.id}>
-                    <span>
-                      {message.name}
-                      {' diz:'}
-                    </span>
-
                     <p>{message.text}</p>
                   </MyMessage>
                 );
@@ -89,28 +75,26 @@ const Home: React.FC = () => {
 
               return (
                 <OtherMessage key={message.id}>
-                  <span>
-                    {message.name}
-                    {' diz:'}
-                  </span>
-
+                  <span>{message.name}</span>
                   <p>{message.text}</p>
                 </OtherMessage>
               );
             })}
           </ul>
         </Card>
-        <input
-          value={text}
-          onChange={e => setText(e.target.value)}
-          placeholder="Enter message..."
-        />
-        <button type="button" onClick={() => sendMessage()}>
-          Send
-        </button>
+        <Send>
+          <Input
+            value={text}
+            onChange={e => setText(e.target.value)}
+            placeholder="Enter message..."
+          />
+          <Button type="button" onClick={() => sendMessage()}>
+            Send
+          </Button>
+        </Send>
       </Content>
     </Container>
   );
 };
 
-export default Home;
+export default Chat;
