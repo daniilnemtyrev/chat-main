@@ -13,7 +13,7 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-height: 190px;
+  min-height: 190px;
   max-width: 320px;
   background-color: #fff;
   padding: 25px;

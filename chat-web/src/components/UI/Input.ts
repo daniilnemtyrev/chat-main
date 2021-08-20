@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Input = styled.input`
   max-width: 270px;
-  height: 35px;
+  min-height: 25px;
   margin-bottom: 10px;
   border-radius: 3px;
   box-shadow: none;

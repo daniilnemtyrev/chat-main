@@ -20,16 +20,9 @@ export const Content = styled.div`
   width: 100%;
   max-width: 450px;
   background: #fff;
-
+  align-items: center;
   box-shadow: 0 0 2px rgba(194, 195, 197);
   border-radius: 9px;
-
-  ul {
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
 `;
 
 export const Card = styled.div`
@@ -37,6 +30,30 @@ export const Card = styled.div`
   height: 100%;
   box-shadow: 0 0 2px rgba(194, 195, 197);
   border-radius: 9px;
+  width: 90%;
+  padding: 10px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #f2f2f2;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+    border-radius: 6px;
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
 `;
 
 export const Send = styled.div`
@@ -59,28 +76,38 @@ export const MyMessage = styled.li`
   align-items: flex-start;
   align-self: flex-end;
   width: 150px;
-
   background: rgba(194, 195, 197);
   color: #000;
-
   border-radius: 15px;
-
-  + li {
-    margin-top: 4px;
-  }
+  margin-top: 4px;
+  word-break: break-all;
+  text-align: left;
 `;
 
 export const OtherMessage = styled.li`
-  padding: 8px;
+  margin-top: 4px;
   text-decoration: none;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start;
+  width: 150px;
+  word-break: break-all;
+  text-align: left;
+`;
 
-  width: 200px;
-
+export const OtherMessageText = styled.div`
+  max-width: 150px;
   background: #f1f1f1;
-
   border-radius: 9px;
+  align-items: flex-start;
+  display: flex;
+  padding: 8px;
+  word-break: break-all;
+  text-align: left;
+`;
+
+export const OtherMessageSpan = styled.span`
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
 `;

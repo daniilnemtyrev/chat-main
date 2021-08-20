@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect } from 'react';
 import { Context } from './index';
-import Auth from './pages/Auth';
-import Chat from './pages/Chat';
+import AppRouter from './components/AppRouter';
+import { BrowserRouter } from 'react-router-dom';
 
 const App: React.FC = () => {
   const { store } = useContext(Context);
@@ -12,11 +12,11 @@ const App: React.FC = () => {
     }
   }, []);
 
-  if (!store.IsAuth) {
-    return <Auth />;
-  }
-
-  return <div>{store.IsAuth ? <Chat /> : `Авторизуйтесь!`}</div>;
+  return (
+    <BrowserRouter>
+      <AppRouter />
+    </BrowserRouter>
+  );
 };
 
 export default observer(App);

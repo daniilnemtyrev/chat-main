@@ -18,6 +18,9 @@ export class User extends Model<User, UserCreationOptions> {
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   email: string;
 
+  @Column({ type: DataType.STRING, unique: true, allowNull: false })
+  name: string;
+
   @Column({ type: DataType.STRING, unique: false, allowNull: false })
   password: string;
 }

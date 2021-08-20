@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import * as uuid from 'uuid';
 import io from 'socket.io-client';
 import {
@@ -8,37 +8,38 @@ import {
   MyMessage,
   OtherMessage,
   Send,
+  OtherMessageText,
+  OtherMessageSpan,
 } from '../styles/chat';
 import { Message, Payload } from '../interfaces/IChat';
 import { Context } from '..';
-import { Button } from '../styles/UI/Button';
-import { Input } from '../styles/UI/Input';
+import { Button } from '../components/UI/Button';
+import { Input } from '../components/UI/Input';
+import { observer } from 'mobx-react-lite';
+import { ButtonNav } from '../components/UI/ButtonNav';
 
 const socket = io('ws://localhost:4000');
 
 const Chat: React.FC = () => {
-  const [title] = useState('2ch');
-  const [name, setName] = useState('');
+  const { store } = useContext(Context);
+  const [title] = useState('ЧАЧАЧАТ');
   const [text, setText] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const { store } = useContext(Context);
-
   useEffect(() => {
-    function receivedMessage(message: Payload) {
-      const newMessage: Message = {
-        id: uuid.v4(),
-        name: message.name,
-        text: message.text,
-      };
-
-      setMessages([...messages, newMessage]);
-    }
-
     socket.on('msgToClient', (message: Payload) => {
       receivedMessage(message);
     });
-  }, [messages, name, text]);
+  }, []);
+
+  function receivedMessage(message: Payload) {
+    const newMessage: Message = {
+      userId: store.user.id,
+      name: message.name,
+      text: message.text,
+    };
+    setMessages(messages => [...messages, newMessage]);
+  }
 
   function validateInput() {
     return text.length > 0;
@@ -47,10 +48,9 @@ const Chat: React.FC = () => {
   function sendMessage() {
     if (validateInput()) {
       const message: Payload = {
-        name: store.user.email,
+        name: store.user.name,
         text,
       };
-
       socket.emit('msgToServer', message);
       setText('');
     }
@@ -60,23 +60,34 @@ const Chat: React.FC = () => {
     <Container>
       <Content>
         <h1>{title}</h1>
-        <Button onClick={() => store.logout()}>Выйти</Button>
-        <h4>{store.user.email}</h4>
+        <ButtonNav>
+          <h4>{store.user.name}</h4>
+          <Button
+            onClick={() => {
+              store.logout(messages);
+              //setMessages([]);
+            }}
+          >
+            Выйти
+          </Button>
+        </ButtonNav>
         <Card>
           <ul>
             {messages.map(message => {
-              if (message.name === store.user.email) {
+              if (message.name === store.user.name) {
                 return (
-                  <MyMessage key={message.id}>
+                  <MyMessage key={message.text}>
                     <p>{message.text}</p>
                   </MyMessage>
                 );
               }
 
               return (
-                <OtherMessage key={message.id}>
-                  <span>{message.name}</span>
-                  <p>{message.text}</p>
+                <OtherMessage key={message.text}>
+                  <OtherMessageSpan>{message.name}</OtherMessageSpan>
+                  <OtherMessageText>
+                    <p>{message.text}</p>
+                  </OtherMessageText>
                 </OtherMessage>
               );
             })}
@@ -97,4 +108,4 @@ const Chat: React.FC = () => {
   );
 };
 
-export default Chat;
+export default observer(Chat);
